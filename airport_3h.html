@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>飞机场3小时剧情</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764baa 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #root {
+      width: 100%;
+      max-width: 900px;
+      height: 700px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .top-frame {
+      height: 80px;
+      background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .top-frame h1 {
+      color: white;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .water-indicator {
+      position: absolute;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: white;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .water-indicator::before {
+      content: "💧";
+      font-size: 18px;
+    }
+
+    .middle-frame {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      gap: 25px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .flight-time {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flight-time::before {
+      content: "✈️";
+      font-size: 18px;
+    }
+
+    #time-label {
+      background: linear-gradient(135deg, #667eea 0%, #764baa 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    #story-text {
+      flex: 1;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border: none;
+      border-radius: 15px;
+      padding: 30px;
+      font-size: 18px;
+      line-height: 1.8;
+      color: #2d3748;
+      resize: none;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    #story-text:focus {
+      outline: none;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    button:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-left {
+      display: flex;
+      gap: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .middle-frame > * {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @media (max-width: 768px) {
+      #root {
+        height: auto;
+        min-height: 600px;
+        margin: 10px;
+      }
+
+      .top-frame {
+        height: 70px;
+      }
+
+      .top-frame h1 {
+        font-size: 24px;
+      }
+
+      .water-indicator {
+        right: 20px;
+        padding: 6px 12px;
+        font-size: 14px;
+      }
+
+      .flight-time {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .middle-frame {
+        padding: 20px;
+        gap: 20px;
+      }
+
+      #story-text {
+        padding: 20px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 12px 30px;
+        font-size: 14px;
+      }
+
+      .btn-left {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="root">
+  <div class="top-frame">
+    <h1>✈️ 飞机场3小时剧情</h1>
+    <div class="water-indicator">
+      <span id="water-label">0 ml</span>
+    </div>
+  </div>
+
+  <div class="middle-frame">
+    <div class="top-bar">
+      <div class="flight-time" id="flight-time">航班起飞: --</div>
+      <div id="time-label">--</div>
+    </div>
+
+    <textarea id="story-text" readonly>欢迎来到飞机场3小时剧情游戏！
+点击开始按钮即可开始你的机场冒险之旅</textarea>
+
+    <div class="bottom-bar">
+      <div class="btn-left">
+        <button id="button-1">🎮 开始游戏</button>
+        <button id="button-2">🎯 开始游戏</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 游戏全局状态
+const user = { name: '玩家', id: 1 };
+let chapter = 0;
+let airportTime = null;
+let drinkWater = 0;
+let money = 80;
+let goods = {};
+let toiletQueueCount = 6; // 厕所排队人数
+const items = [
+  ['卫生巾', 10],
+  ['矿泉水', 3],
+  ['卫生纸', 5],
+  ['备用内裤', 20],
+  ['备用长裤', 80],
+  ['备用打底裤', 50]
+];
+const itemEffects = {
+  '卫生巾': '尿2s',
+  '矿泉水': '尿1s',
+  '卫生纸': '尿3s',
+  '备用内裤': '可以失禁',
+  '备用长裤': '可以尿一半',
+  '备用打底裤': '可以尿三分之一'
+};
+
+// 简化DOM获取
+function $(id) {
+  return document.getElementById(id);
+}
+
+// 更新当前时间和航班倒计时
+function updateTime() {
+  const now = new Date();
+  $('time-label').textContent = now.toLocaleString('zh-CN');
+
+  // 检查是否错过航班
+  if (airportTime && airportTime < Date.now() / 1000) {
+    alert('航班已经错过,请重新开始！！');
+    resetStory();
+  }
+
+  // 每秒更新一次
+  setTimeout(updateTime, 1000);
+}
+updateTime();
+
+// 重置游戏状态
+function resetStory() {
+  chapter = 0;
+  airportTime = null;
+  drinkWater = 0;
+  money = 80;
+  goods = {};
+  toiletQueueCount = 6;
+  $('flight-time').textContent = '航班起飞: --';
+  $('water-label').textContent = `${drinkWater} ml`;
+  refreshUI(
+    '欢迎来到飞机场3小时剧情游戏！\n点击开始按钮即可开始你的机场冒险之旅',
+    '🎮 开始游戏',
+    '🎯 开始游戏'
+  );
+}
+
+// 刷新页面UI
+function refreshUI(text, b1, b2) {
+  $('story-text').value = text;
+  $('button-1').textContent = b1;
+  $('button-2').textContent = b2;
+  $('water-label').textContent = `${drinkWater} ml`;
+  [$('button-1'), $('button-2')].forEach(b => b.disabled = false);
+}
+
+// 禁用按钮
+function disableButtons() {
+  $('button-1').disabled = true;
+  $('button-2').disabled = true;
+}
+
+// 记录用户操作日志
+function logBehavior(btnName) {
+  console.log(`[LOG] 用户${user.id} 点击 ${btnName}`);
+}
+
+// 睡眠函数（参数：秒，真实等待时长）
+function sleep(t) {
+  return new Promise(r => setTimeout(r, t * 1000));
+}
+
+// 格式化时间戳为可读格式
+function formatTime(timestamp) {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleString('zh-CN');
+}
+
+// 生成1-6的随机骰子数
+function rollDice() {
+  return Math.floor(Math.random() * 6) + 1;
+}
+
+// 商店系统
+function openShop(initMoney) {
+  let m = initMoney;
+  let g = { ...goods };
+
+  // 构建商品列表
+  let list = items.map((it, i) => `${i}. ${it[0]} ${it[1]}元`).join('\n');
+
+  while (true) {
+    let ans = prompt(`小小商店\n${list}\n\n持有金钱: ${m}元\n输入序号购买，留空或取消退出`);
+
+    if (ans === null || ans === '') break;
+
+    let idx = parseInt(ans);
+    if (isNaN(idx) || idx < 0 || idx >= items.length) {
+      alert('无效序号，请重新输入');
+      continue;
+    }
+
+    let [name, price] = items[idx];
+    if (m < price) {
+      alert(`余额不足！当前余额：${m}元，商品价格：${price}元`);
+      continue;
+    }
+
+    if (!confirm(`是否花费${price}元购买${name}?`)) continue;
+
+    // 扣除金钱并添加商品
+    m -= price;
+    g[name] = (g[name] || 0) + 1;
+    alert(`购买成功！已获得${name}，剩余余额：${m}元`);
+  }
+
+  goods = g;
+  return m;
+}
+
+// 构建持有物品文本
+function getGoodsText() {
+  let tep = '';
+  if (Object.keys(goods).length > 0) {
+    for (const [name, num] of Object.entries(goods)) {
+      tep += `${name} ${num}个\n`;
+    }
+    tep += '\n作用：\n';
+    for (const [name, effect] of Object.entries(itemEffects)) {
+      if (goods[name]) {
+        tep += `${name}：${effect}\n`;
+      }
+    }
+  }
+  return tep || '你没有购买任何物品';
+}
+
+// 按钮1点击事件处理（去机场分支为主，对应Python _on_button_1）
+async function handleButton1() {
+  logBehavior($('button-1').textContent);
+  switch(chapter) {
+    case 0:
+      // 开始游戏
+      airportTime = Date.now() / 1000 + 3 * 3600;
+      const flightTimeStr = formatTime(airportTime);
+      $('flight-time').textContent = `航班起飞: ${flightTimeStr}`;
+      refreshUI(
+        '背景：你现在在家还有3小时就要上航班了\n你感到有点口渴就喝了1瓶农夫山泉\n\n任务：喝水500ml',
+        '🥤 喝水500ml',
+        '🥤 喝水500ml'
+      );
+      chapter = 1;
+      break;
+
+    case 1:
+      // 喝水
+      drinkWater += 500;
+      refreshUI(
+        '喝完水之后发现时间还有很长一段时间\n是否要出发去机场\n不去机场可以等待10分钟等到出租车\n去机场则需要做地铁去\n\n任务：决定是否要出发去机场',
+        '🚇 去机场',
+        '🚷 不去机场(等待10分钟)'
+      );
+      chapter = 2;
+      break;
+
+    case 2:
+      // 选择去机场，下楼去地铁站
+      refreshUI(
+        '现在你需要下楼\n然后走到地铁站\n\n任务：左右抬腿30次(左抬算一次，右抬也算一次)+走40步，等待5分钟',
+        '🏃 完成动作并等待',
+        '🏃 完成动作并等待'
+      );
+      chapter = 3;
+      break;
+
+    case 3:
+      // 等待5分钟后到地铁站
+      disableButtons();
+      await sleep(5 * 60); // 5分钟等待
+      refreshUI(
+        '现在你到了地铁站需要等车\n但是车很多都是满人的\n你需要等到一部没什么人的车\n\n任务：骰子投到1(每投一次需要等待3分钟)',
+        '🎲 投骰子',
+        '🎲 投骰子'
+      );
+      chapter = 4;
+      break;
+
+    case 4:
+      // 地铁站投骰子
+      disableButtons();
+      const dice1 = rollDice();
+      if (dice1 === 1) {
+        refreshUI(
+          '恭喜！骰子投到1\n现在你上了车\n等待5分钟到达机场\n\n任务：等待5分钟',
+          '⏰ 等待5分钟',
+          '⏰ 等待5分钟'
+        );
+        chapter = 5;
+      } else {
+        refreshUI(
+          `骰子投到${dice1}，未达标\n现在你到了地铁站需要等车\n但是车很多都是满人的\n你需要等到一部没什么人的车\n\n任务：骰子投到1(每投一次需要等待3分钟)\n当前骰子数：${dice1}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(3 * 60); // 3分钟等待
+        chapter = 4; // 继续投骰子
+      }
+      break;
+
+    case 5:
+      // 等待5分钟到达机场
+      disableButtons();
+      await sleep(5 * 60); // 5分钟等待
+      drinkWater += 300; // 到达机场口渴喝水
+      refreshUI(
+        '你到达了机场前面人很多\n你需要排队进入\n你还感到了口渴喝了300ml水\n\n任务：骰子投到1(每次投需要等待2分钟)',
+        '🎲 投骰子到1',
+        '🎲 投骰子到1'
+      );
+      chapter = 8;
+      break;
+
+    case 6:
+      // 出租车前往机场（不去机场分支后续）
+      refreshUI(
+        '你上了出租车，需要15分钟到达机场\n\n任务：等待15分钟',
+        '⏳ 等待15分钟',
+        '⏳ 等待15分钟'
+      );
+      chapter = 7;
+      break;
+
+    case 7:
+      // 出租车等待15分钟到达机场
+      disableButtons();
+      await sleep(15 * 60); // 15分钟等待
+      drinkWater += 300; // 到达机场口渴喝水
+      refreshUI(
+        '你到达了机场前面人很多\n你需要排队进入\n你还感到了口渴喝了300ml水\n\n任务：骰子投到1(每次投需要等待2分钟)',
+        '🎲 投骰子到1+喝水300ml',
+        '🎲 投骰子到1+喝水300ml'
+      );
+      chapter = 8;
+      break;
+
+    case 8:
+      // 机场排队投骰子
+      disableButtons();
+      const dice2 = rollDice();
+      if (dice2 === 1) {
+        refreshUI(
+          '恭喜！骰子投到1\n你到达了机场里面\n找到了自己的位置坐了下来\n\n任务：走10步坐下',
+          '🚶 走10步坐下',
+          '🚶 走10步坐下'
+        );
+        chapter = 9;
+      } else {
+        refreshUI(
+          `骰子投到${dice2}，未达标\n你到达了机场前面人很多\n你需要排队进入\n你还感到了口渴喝了300ml水\n\n任务：骰子投到1(每次投需要等待2分钟)\n当前骰子数：${dice2}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(2 * 60); // 2分钟等待
+        chapter = 8; // 继续投骰子
+      }
+      break;
+
+    case 9:
+      // 机场内闲逛
+      refreshUI(
+        '你发现距离飞机起飞时间还有很长一段时间\n就去机场的附近逛逛\n\n任务：走20步(等待2分钟)',
+        '🚶 走20步(等待2分钟)',
+        '🚶 走20步(等待2分钟)'
+      );
+      chapter = 10;
+      break;
+
+    case 10:
+      // 闲逛等待2分钟，发现便利店
+      disableButtons();
+      await sleep(2 * 60); // 2分钟等待
+      refreshUI(
+        '逛的时候发现了便利店\n在门口犹豫是否要进去\n身上带的钱没那么多\n\n任务：选择进去与否',
+        '🛒 进入便利店',
+        '🚪 不进去(在门口犹豫了3分钟)'
+      );
+      chapter = 11;
+      break;
+
+    case 11:
+      // 进入便利店购物
+      disableButtons();
+      money = openShop(money);
+      refreshUI(
+        '现在你想回到原本的座位了\n但是被正在登机的人堵着了\n你在一层层地突破人群\n\n任务：投骰子到2每次骰骰子需要等待2分钟',
+        '🎲 投骰子到2继续',
+        '🎲 投骰子到2继续'
+      );
+      chapter = 12;
+      break;
+
+    case 12:
+      // 突破人群投骰子（目标2）
+      disableButtons();
+      const dice3 = rollDice();
+      if (dice3 === 2) {
+        refreshUI(
+          '恭喜！骰子投到2\n现在回到原本的座位了\n不知道做什么就坐在原位玩起了手机\n感到了口渴喝了300ml水\n\n任务：任意姿势保持10分钟，喝300ml水',
+          '📱 保持10分钟+喝300ml水',
+          '📱 保持10分钟+喝300ml水'
+        );
+        chapter = 13;
+      } else {
+        refreshUI(
+          `骰子投到${dice3}，未达标\n现在你想回到原本的座位了\n但是被正在登机的人堵着了\n你在一层层地突破人群\n\n任务：投骰子到2每次骰骰子需要等待2分钟\n当前骰子数：${dice3}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(2 * 60); // 2分钟等待
+        chapter = 12; // 继续投骰子
+      }
+      break;
+
+    case 13:
+      // 保持10分钟触发尿意
+      disableButtons();
+      drinkWater += 300; // 喝水
+      await sleep(10 * 60); // 10分钟等待
+      refreshUI(
+        '突然你感到有点想尿尿\n你在犹豫到底要不要去厕所\n\n任务：选择是否去厕所',
+        '🚻 去厕所(走20步)',
+        '📱 不去厕所继续刷手机(等待10分钟)'
+      );
+      chapter = 14;
+      break;
+
+    case 14:
+      // 去厕所排队
+      refreshUI(
+        `你抵达了厕所需要排队，还有一些人插队\n当前前面有${toiletQueueCount}个人\n\n任务：骰子投到1`,
+        '🎲 投骰子',
+        '🎲 投骰子'
+      );
+      chapter = 15;
+      break;
+
+    case 15:
+      // 厕所排队投骰子
+      disableButtons();
+      const dice4 = rollDice();
+      if (dice4 === 1) {
+        refreshUI(
+          '恭喜！骰子投到1\n你进入了厕所可以尿3s,然后回到了原座位\n\n任务：尿3s+走20步',
+          '🚽 尿3s+走20步',
+          '🚽 尿3s+走20步'
+        );
+        chapter = 16;
+      } else {
+        toiletQueueCount -= 1; // 排队人数减少
+        refreshUI(
+          `骰子投到${dice4}，未达标\n你抵达了厕所需要排队，还有一些人插队\n前面有${toiletQueueCount}个人\n\n任务：骰子投到1\n当前骰子数：${dice4}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(2 * 60); // 2分钟等待
+        chapter = 15; // 继续投骰子
+      }
+      break;
+
+    case 16:
+      // 尿后回到座位，口渴喝水
+      refreshUI(
+        '你现在觉得有点口渴,喝了点水\n\n任务：喝300ml水',
+        '🥤 喝300ml水',
+        '🥤 喝300ml水'
+      );
+      chapter = 17;
+      break;
+
+    case 17:
+      // 展示持有物品和道具作用
+      drinkWater += 300; // 喝水
+      const goodsText = getGoodsText();
+      refreshUI(
+        `现在距离航班只有半小时了，你现在想起了你买的东西:\n\n${goodsText}`,
+        '🛍 使用道具',
+        '🛍 使用道具'
+      );
+      chapter = 18;
+      break;
+
+    case 18:
+      // 使用道具，准备登机
+      refreshUI(
+        '马上飞机就要起飞了\n你感到来不及了就飞快地跑了过去\n\n任务：高抬腿1分钟+左右抬腿共20次',
+        '🏃 高抬腿1分钟+左右抬腿20次',
+        '🏃 高抬腿1分钟+左右抬腿20次'
+      );
+      chapter = 19;
+      break;
+
+    case 19:
+      // 成功登机，可排尿
+      refreshUI(
+        '恭喜上了飞机现在可以尿尿了\n\n任务：排完所有的尿',
+        '🎉 排完所有的尿',
+        '🎉 排完所有的尿'
+      );
+      chapter = 20;
+      break;
+
+    case 20:
+      // 游戏通关，询问是否再来一轮
+      refreshUI(
+        '游戏通关！你成功赶上航班并解决了需求！\n\n是否再来一轮？',
+        '👍 是',
+        '👎 否'
+      );
+      chapter = 21;
+      break;
+
+    case 21:
+      // 再来一轮，重置部分状态
+      airportTime = Date.now() / 1000 + 3 * 3600;
+      const newFlightTime = formatTime(airportTime);
+      $('flight-time').textContent = `航班起飞: ${newFlightTime}`;
+      money = 80;
+      goods = {};
+      toiletQueueCount = 6;
+      drinkWater = 0;
+      refreshUI(
+        '背景：你现在在家还有3小时就要上航班了\n你感到有点口渴就喝了1瓶农夫山泉\n\n任务：喝水500ml',
+        '🥤 喝水500ml',
+        '🥤 喝水500ml'
+      );
+      chapter = 1;
+      break;
+
+    default:
+      resetStory();
+      break;
+  }
+}
+
+// 按钮2点击事件处理（不去机场分支为主，对应Python _on_button_2）
+async function handleButton2() {
+  logBehavior($('button-2').textContent);
+  switch(chapter) {
+    case 0:
+      // 开始游戏
+      airportTime = Date.now() / 1000 + 3 * 3600;
+      const flightTimeStr = formatTime(airportTime);
+      $('flight-time').textContent = `航班起飞: ${flightTimeStr}`;
+      refreshUI(
+        '背景：你现在在家还有3小时就要上航班了\n你感到有点口渴就喝了1瓶农夫山泉\n\n任务：喝水500ml',
+        '🥤 喝水500ml',
+        '🥤 喝水500ml'
+      );
+      chapter = 1;
+      break;
+
+    case 1:
+      // 喝水
+      drinkWater += 500;
+      refreshUI(
+        '喝完水之后发现时间还有很长一段时间\n是否要出发去机场\n不去机场可以等待10分钟等到出租车\n去机场则需要做地铁去\n\n任务：决定是否要出发去机场',
+        '🚇 去机场',
+        '🚷 不去机场(等待10分钟)'
+      );
+      chapter = 2;
+      break;
+
+    case 2:
+      // 选择不去机场，等待10分钟出租车
+      disableButtons();
+      await sleep(10 * 60); // 10分钟等待
+      refreshUI(
+        '出租车到了，你需要下楼\n\n任务：左右抬腿30次(左抬算一次，右抬也算一次)',
+        '🏃 左右抬腿30次',
+        '🏃 左右抬腿30次'
+      );
+      chapter = 6;
+      break;
+
+    case 3:
+      // 去机场分支：等待5分钟到地铁站（备用）
+      disableButtons();
+      await sleep(5 * 60);
+      refreshUI(
+        '现在你到了地铁站需要等车\n但是车很多都是满人的\n你需要等到一部没什么人的车\n\n任务：骰子投到4(每投一次需要等待3分钟)',
+        '🎲 投骰子',
+        '🎲 投骰子'
+      );
+      chapter = 4;
+      break;
+
+    case 4:
+      // 地铁站投骰子（备用，目标4）
+      disableButtons();
+      const dice1 = rollDice();
+      if (dice1 === 1) {
+        refreshUI(
+          '恭喜！骰子投到1\n现在你上了车\n等待5分钟到达机场\n\n任务：等待5分钟',
+          '⏰ 等待5分钟',
+          '⏰ 等待5分钟'
+        );
+        chapter = 5;
+      } else {
+        refreshUI(
+          `骰子投到${dice1}，未达标\n现在你到了地铁站需要等车\n但是车很多都是满人的\n你需要等到一部没什么人的车\n\n任务：骰子投到1(每投一次需要等待3分钟)\n当前骰子数：${dice1}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(3 * 60);
+        chapter = 4;
+      }
+      break;
+
+    case 5:
+      // 等待5分钟到达机场（备用）
+      disableButtons();
+      await sleep(5 * 60);
+      drinkWater += 300;
+      refreshUI(
+        '你到达了机场前面人很多\n你需要排队进入\n你还感到了口渴喝了300ml水\n\n任务：骰子投到1(每次投需要等待2分钟)',
+        '🎲 骰子投到1',
+        '🎲 骰子投到1'
+      );
+      chapter = 8;
+      break;
+
+    case 6:
+      // 上出租车，等待15分钟
+      refreshUI(
+        '你上了出租车，需要15分钟到达机场\n\n任务：等待15分钟',
+        '⏳ 等待15分钟',
+        '⏳ 等待15分钟'
+      );
+      chapter = 7;
+      break;
+
+    case 7:
+      // 出租车等待15分钟到达机场
+      disableButtons();
+      await sleep(15 * 60);
+      drinkWater += 300;
+      refreshUI(
+        '你到达了机场前面人很多\n你需要排队进入\n你还感到了口渴喝了300ml水\n\n任务：骰子投到1(每次投需要等待2分钟)',
+        '🎲 骰子投到1+喝水300ml',
+        '🎲 骰子投到1+喝水300ml'
+      );
+      chapter = 8;
+      break;
+
+    case 8:
+      // 机场排队投骰子
+      disableButtons();
+      const dice2 = rollDice();
+      if (dice2 === 1) {
+        refreshUI(
+          '恭喜！骰子投到1\n你到达了机场里面\n找到了自己的位置坐了下来\n\n任务：走10步坐下',
+          '🚶 走10步坐下',
+          '🚶 走10步坐下'
+        );
+        chapter = 9;
+      } else {
+        refreshUI(
+          `骰子投到${dice2}，未达标\n你到达了机场前面人很多\n你需要排队进入\n你还感到了口渴喝了300ml水\n\n任务：骰子投到1(每次投需要等待2分钟)\n当前骰子数：${dice2}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(2 * 60);
+        chapter = 8;
+      }
+      break;
+
+    case 9:
+      // 机场内闲逛
+      drinkWater = 500; // 重置饮水量（对应Python逻辑）
+      refreshUI(
+        '你发现距离飞机起飞时间还有很长一段时间\n就去机场的附近逛逛\n\n任务：走20步(等待2分钟)',
+        '🚶 走20步(等待2分钟)',
+        '🚶 走20步(等待2分钟)'
+      );
+      chapter = 10;
+      break;
+
+    case 10:
+      // 闲逛等待2分钟，发现便利店
+      disableButtons();
+      drinkWater = 500;
+      await sleep(2 * 60);
+      refreshUI(
+        '逛的时候发现了便利店\n在门口犹豫是否要进去\n身上带的钱没那么多\n\n任务：选择进去与否',
+        '🛒 进入便利店',
+        '🚪 不进去(在门口犹豫了3分钟)'
+      );
+      chapter = 11;
+      break;
+
+    case 11:
+      // 不进入便利店，犹豫3分钟
+      disableButtons();
+      await sleep(3 * 60); // 3分钟等待
+      refreshUI(
+        '现在你想回到原本的座位了\n但是被正在登机的人堵着了\n你在一层层地突破人群\n\n任务：投骰子到2每次投骰子需要等待2分钟',
+        '🎲 投骰子到2继续',
+        '🎲 投骰子到2继续'
+      );
+      chapter = 12;
+      break;
+
+    case 12:
+      // 突破人群投骰子（目标2）
+      disableButtons();
+      const dice3 = rollDice();
+      if (dice3 === 2) {
+        refreshUI(
+          '恭喜！骰子投到2\n现在回到原本的座位了\n不知道做什么就坐在原位玩起了手机\n感到了口渴喝了300ml水\n\n任务：任意姿势保持10分钟，喝300ml水',
+          '📱 保持10分钟+喝300ml水',
+          '📱 保持10分钟+喝300ml水'
+        );
+        chapter = 13;
+      } else {
+        refreshUI(
+          `骰子投到${dice3}，未达标\n现在你想回到原本的座位了\n但是被正在登机的人堵着了\n你在一层层地突破人群\n\n任务：投骰子到2每次骰骰子需要等待2分钟\n当前骰子数：${dice3}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(2 * 60);
+        chapter = 12;
+      }
+      break;
+
+    case 13:
+      // 保持10分钟触发尿意
+      disableButtons();
+      drinkWater += 300;
+      await sleep(10 * 60);
+      refreshUI(
+        '突然你感到有点想尿尿\n你在犹豫到底要不要去厕所\n\n任务：选择是否去厕所',
+        '🚻 去厕所(走20步)',
+        '📱 不去厕所继续刷手机(等待10分钟)'
+      );
+      chapter = 14;
+      break;
+
+    case 14:
+      // 不去厕所，继续刷手机10分钟
+      disableButtons();
+      await sleep(10 * 60); // 10分钟等待
+      refreshUI(
+        '你现在觉得有点口渴,喝了点水\n\n任务：喝300ml水',
+        '🥤 喝300ml水',
+        '🥤 喝300ml水'
+      );
+      chapter = 17;
+      break;
+
+    case 15:
+      // 厕所排队投骰子
+      disableButtons();
+      const dice4 = rollDice();
+      if (dice4 === 1) {
+        refreshUI(
+          '恭喜！骰子投到1\n你进入了厕所可以尿3s,然后回到了原座位\n\n任务：尿3s+走20步',
+          '🚽 尿3s+走20步',
+          '🚽 尿3s+走20步'
+        );
+        chapter = 16;
+      } else {
+        toiletQueueCount -= 1;
+        refreshUI(
+          `骰子投到${dice4}，未达标\n你抵达了厕所需要排队，还有一些人插队\n前面有${toiletQueueCount}个人\n\n任务：骰子投到1\n当前骰子数：${dice4}`,
+          '🎲 重新投骰子',
+          '🎲 重新投骰子'
+        );
+        await sleep(2 * 60);
+        chapter = 15;
+      }
+      break;
+
+    case 16:
+      // 尿后回到座位，口渴喝水
+      refreshUI(
+        '你现在觉得有点口渴,喝了点水\n\n任务：喝300ml水',
+        '🥤 喝300ml水',
+        '🥤 喝300ml水'
+      );
+      chapter = 17;
+      break;
+
+    case 17:
+      // 展示持有物品和道具作用
+      drinkWater += 300;
+      const goodsText = getGoodsText();
+      refreshUI(
+        `现在距离航班只有半小时了，你现在想起了你买的东西:\n\n${goodsText}`,
+        '🛍 使用道具',
+        '🛍 使用道具'
+      );
+      chapter = 18;
+      break;
+
+    case 18:
+      // 使用道具，准备登机
+      refreshUI(
+        '马上飞机就要起飞了\n你感到来不及了就飞快地跑了过去\n\n任务：高抬腿1分钟+左右抬腿共20次',
+        '🏃 高抬腿1分钟+左右抬腿20次',
+        '🏃 高抬腿1分钟+左右抬腿20次'
+      );
+      chapter = 19;
+      break;
+
+    case 19:
+      // 成功登机，可排尿
+      refreshUI(
+        '恭喜上了飞机现在可以尿尿了\n\n任务：排完所有的尿',
+        '🎉 排完所有的尿',
+        '🎉 排完所有的尿'
+      );
+      chapter = 20;
+      break;
+
+    case 20:
+      // 游戏通关，询问是否再来一轮
+      refreshUI(
+        '游戏通关！你成功赶上航班并解决了需求！\n\n是否再来一轮？',
+        '👍 是',
+        '👎 否'
+      );
+      chapter = 21;
+      break;
+
+    case 21:
+      // 拒绝再来一轮，返回主菜单
+      alert('感谢游玩！返回主菜单');
+      resetStory();
+      break;
+
+    default:
+      resetStory();
+      break;
+  }
+}
+
+// 初始化游戏
+resetStory();
+
+// 绑定按钮点击事件
+$('button-1').onclick = () => handleButton1();
+$('button-2').onclick = () => handleButton2();
+</script>
+</body>
+</html>

@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>飞机场2小时剧情（网页版）</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+#root {
+    width: 100%;
+    max-width: 900px;
+    height: 700px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ---------- 顶部栏 ---------- */
+.top-frame {
+    height: 80px;
+    background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.top-frame h1 {
+    color: white;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.water-indicator {
+    position: absolute;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.water-indicator::before {
+    content: "💧";
+    font-size: 18px;
+}
+
+/* ---------- 中间框架 ---------- */
+.middle-frame {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    gap: 25px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.flight-time {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.flight-time::before {
+    content: "✈️";
+    font-size: 18px;
+}
+
+#time-label {
+    background: linear-gradient(135deg, #667eea 0%, #764baa 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+#story-text {
+    flex: 1;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 30px;
+    font-size: 18px;
+    line-height: 1.8;
+    color: #2d3748;
+    resize: none;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+#story-text:focus {
+    outline: none;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.bottom-bar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+/* ---------- 按钮样式 ---------- */
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+button:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-left {
+    display: flex;
+    gap: 20px;
+}
+
+/* ---------- 动画效果 ---------- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.middle-frame > * {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* ---------- 响应式设计 ---------- */
+@media (max-width: 768px) {
+    #root {
+        height: auto;
+        min-height: 600px;
+        margin: 10px;
+    }
+
+    .top-frame {
+        height: 70px;
+    }
+
+    .top-frame h1 {
+        font-size: 24px;
+    }
+
+    .water-indicator {
+        right: 20px;
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .flight-time {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .middle-frame {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    #story-text {
+        padding: 20px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 12px 30px;
+        font-size: 14px;
+    }
+
+    .btn-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* ---------- 特殊效果 ---------- */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    }
+}
+</style>
+</head>
+<body>
+<div id="root">
+  <!-- 顶部栏 -->
+  <div class="top-frame">
+    <h1>✈️ 飞机场2小时剧情</h1>
+    <div class="water-indicator">
+      <span id="water-label">0 ml</span>
+    </div>
+  </div>
+
+  <!-- 中间框架 -->
+  <div class="middle-frame">
+    <div class="top-bar">
+      <div class="flight-time" id="flight-time">航班起飞: --</div>
+      <div id="time-label">--</div>
+    </div>
+
+    <textarea id="story-text" readonly>欢迎来到飞机场2小时剧情游戏！
+点击开始按钮即可开始你的机场冒险之旅</textarea>
+
+    <div class="bottom-bar">
+      <div class="btn-left">
+        <button id="button-1">🎮 开始游戏</button>
+        <button id="button-2">🎯 开始游戏</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/********************************************************************
+ *  数据层：与 Python 版一一对应
+ *******************************************************************/
+const user = {name:'玩家',id:1};               // 模拟登录信息
+let chapter   = 0;                                // 当前章节
+let airportTime = null;                           // 航班截止时刻（秒级时间戳）
+let drinkWater= 0;                                // 已喝水量
+let money     = 80;                               // 零用钱
+let goods     = {};                               // 已购道具
+const items   = [                                 // 商店货架
+  ['卫生巾',10],['矿泉水',3],['卫生纸',5],
+  ['备用内裤',20],['备用长裤',80],['备用打底裤',50]
+];
+
+/********************************************************************
+ *  UI 层：完全对齐 tkinter 版
+ *******************************************************************/
+const $ = id=>document.getElementById(id);
+$('water-label').textContent = `${drinkWater} ml`;
+
+/* ---- 时间更新 ---- */
+function updateTime(){
+  const now = new Date();
+  $('time-label').textContent = now.toLocaleString('zh-CN');
+
+  // 更新航班起飞时间显示
+  if(airportTime) {
+    const flightDate = new Date(airportTime * 1000);
+    $('flight-time').textContent = `✈️ 航班起飞时间: ${flightDate.toLocaleString('zh-CN')}`;
+  }
+
+  if(airportTime && airportTime < Date.now()/1000){
+    alert('航班已经错过,请重新开始！！');
+    resetStory();
+  }
+  setTimeout(updateTime,1000);
+}
+updateTime();
+
+/* ---- 重置 ---- */
+function resetStory(){
+  chapter = 0;
+  airportTime = null;
+  drinkWater = 0;
+  money = 80;
+  goods = {};
+  $('flight-time').textContent = '航班起飞: --';
+  refreshUI('欢迎来到飞机场2小时剧情游戏！\n点击开始按钮即可开始你的机场冒险之旅','🎮 开始游戏','🎯 开始游戏');
+}
+
+/* ---- 统一刷新 ---- */
+function refreshUI(text,b1,b2){
+  $('story-text').value = text;
+  $('button-1').textContent = b1;
+  $('button-2').textContent = b2;
+  $('water-label').textContent = `${drinkWater} ml`;
+  [$('button-1'),$('button-2')].forEach(b=>b.disabled=false);
+}
+
+/* ---- 按钮禁用 ---- */
+function disableButtons(){
+  $('button-1').disabled=true;
+  $('button-2').disabled=true;
+}
+
+/********************************************************************
+ *  剧情分支：与 Python 版 __on_button_1 / __on_button_2 完全一致
+ *******************************************************************/
+function logBehavior(btnName){
+  // 实际项目可发给后端
+  console.log(`[LOG] 用户${user.id} 点击 ${btnName}`);
+}
+
+/* 主分支 */
+async function handleButton1(){
+  logBehavior($('button-1').textContent);
+  if(chapter===0){ startChapter1(); }
+  else if(chapter===1){ drink500(); }
+  else if(chapter===2){ await walk20(); }
+  else if(chapter===3){ await enterShop(); }
+  else if(chapter===4){ await diceTo2(); }
+  else if(chapter===5){ await keep10min(); }
+  else if(chapter===6){ queueDice(); }
+  else if(chapter===7){ await diceTo1(); }
+  else if(chapter===8){ drink300(); }
+  else if(chapter===9){ showGoods(); }
+  else if(chapter===10){ highLeg(); }
+  else if(chapter===11){ finalPee(); }
+  else if(chapter===12){ againYes(); }
+  else if(chapter===13){ restartRound(); }
+}
+async function handleButton2(){
+  logBehavior($('button-2').textContent);
+  if(chapter===0){ startChapter1(); }
+  else if(chapter===1){ drink500(); }
+  else if(chapter===2){ await walk20(); }
+  else if(chapter===3){ await hesitate3min(); }
+  else if(chapter===4){ await diceTo2(); }
+  else if(chapter===5){ await keep10min(); }
+  else if(chapter===6){ await wait10min(); }
+  else if(chapter===7){ await diceTo1(); }
+  else if(chapter===8){ drink300(); }
+  else if(chapter===9){ showGoods(); }
+  else if(chapter===10){ highLeg(); }
+  else if(chapter===11){ finalPee(); }
+  else if(chapter===12){ againNo(); }
+  else if(chapter===13){ restartRound(); }
+}
+
+/* 章节实现 */
+function startChapter1(){
+  airportTime = Date.now()/1000 + 2*3600;
+  refreshUI(
+`背景：你现在在机场还有2小时就要上航班了
+你的手上有一杯500ml的奶茶，航班规定已开的饮料不允许带上航班
+你就将奶茶全喝了!
+
+任务：喝水500ml`,
+'🥤 喝水500ml','🥤 喝水500ml');
+  chapter=1;
+}
+function drink500(){
+  drinkWater=500;
+  refreshUI(
+`喝完水之后发现时间还有很长一段时间
+就去机场的附近逛逛
+
+任务：走20步(等待2分钟)`,
+'🚶 走20步(等待2分钟)','🚶 走20步(等待2分钟)');
+  chapter=2;
+}
+async function walk20(){
+  disableButtons();
+  await sleep(2*60);
+  refreshUI(
+`逛的时候发现了便利店
+在门口犹豫是否要进去
+身上带的钱没那么多
+
+任务：选择进去与否`,
+'🏪 进入便利店','🤔 不进去(在门口犹豫了3分钟)');
+  chapter=3;
+}
+async function enterShop(){
+  disableButtons();
+  money = await openShop(money);
+  refreshUI(
+`现在你想回到原本的座位了
+但是被正在登机的人堵着了
+你在一层层地突破人群
+
+任务：投骰子到2每次骰骰子需要等待2分钟`,
+'🎲 投骰子到2继续','🎲 投骰子到2继续');
+  chapter=4;
+}
+async function hesitate3min(){
+  disableButtons();
+  await sleep(3*60);
+  refreshUI(
+`现在你想回到原本的座位了
+但是被正在登机的人堵着了
+你在一层层地突破人群
+
+任务：投骰子到2每次投骰子需要等待2分钟`,
+'🎲 投骰子到2继续','🎲 投骰子到2继续');
+  chapter=4;
+}
+async function diceTo2(){
+  disableButtons();
+  let rand = rand6();
+  if(rand===2){
+    drinkWater+=300;
+    refreshUI(
+`现在回到原本的座位了
+不知道做什么就坐在原位玩起了手机
+感到了口渴喝了300ml水
+
+任务：任意姿势保持10分钟，喝300ml水`,
+'☕ 任意姿势保持10分钟，喝300ml水','☕ 任意姿势保持10分钟，喝300ml水');
+    chapter=5;
+  }else{
+    refreshUI(
+`现在你想回到原本的座位了
+但是被正在登机的人堵着了
+你在一层层地突破人群
+
+任务：投骰子到2每次骰骰子需要等待2分钟
+当前骰子数：${rand}`,
+'🎲 投骰子到2继续','🎲 投骰子到2继续');
+    await sleep(2*60);
+    refreshUI(
+`现在你想回到原本的座位了
+但是被正在登机的人堵着了
+你在一层层地突破人群
+
+任务：投骰子到2每次骰骰子需要等待2分钟
+当前骰子数：${rand}`,
+'🎲 投骰子到2继续','🎲 投骰子到2继续');
+  }
+}
+async function keep10min(){
+  disableButtons();
+  await sleep(10*60);
+  refreshUI(
+`突然你感到有点想尿尿
+你在犹豫到底要不要去厕所
+
+任务：选择是否去厕所`,
+'🚽 去厕所(走20步)','📱 不去厕所继续刷手机(等待10分钟)');
+  chapter=6;
+}
+async function wait10min(){
+  disableButtons();
+  await sleep(10*60);
+  drinkWater+=300;
+  refreshUI(
+`你现在觉得有点口渴,喝了点水
+
+任务：喝300ml水`,
+'🥤 喝300ml水','🥤 喝300ml水');
+  chapter=9;
+}
+function queueDice(){
+  refreshUI(
+`你抵达了厕所需要排队，还有一些人插队
+当前前面有6个人
+
+任务：骰子投到1`,
+'🎲 投骰子','🎲 投骰子');
+  chapter=7;
+}
+async function diceTo1(){
+  disableButtons();
+  let rand = rand6();
+  if(rand===1){
+    refreshUI(
+`你进入了厕所可以尿3s,然后回到了原座位
+
+任务：尿3s+走20步`,
+'🚽 尿3s+走20步','🚽 尿3s+走20步');
+    chapter=8;
+  }else{
+    await sleep(2*60);
+    refreshUI(
+`你抵达了厕所需要排队，还有一些人插队
+前面有5个人
+
+任务：骰子投到1
+当前骰子数${rand}`,
+'🎲 投骰子','🎲 投骰子');
+  }
+}
+function drink300(){
+  drinkWater+=300;
+  refreshUI(
+`你现在觉得有点口渴,喝了点水
+
+任务：喝300ml水`,
+'🥤 喝300ml水','🥤 喝300ml水');
+  chapter=9;
+}
+function showGoods(){
+  drinkWater=1100;
+  let t='';
+  for(let k in goods) t+=k+goods[k]+'个\n';
+  if(t){
+    refreshUI(
+`现在距离航班只有半小时了，你现在想起了你买的东西:
+
+${t}作用：卫生巾：尿2s  矿泉水:尿1s
+卫生纸:尿3s  备用内裤:可以失禁
+备用长裤:可以尿一半  备用打底裤：可以尿三分之一`,
+'🛍️ 使用道具','🛍️ 使用道具');
+  }else{
+    refreshUI(
+`现在距离航班只有半小时了，你现在想起了你买的东西:`,
+'🛍️ 使用道具','🛍️ 使用道具');
+  }
+  chapter=10;
+}
+function highLeg(){
+  refreshUI(
+`马上飞机就要起飞了
+你感到来不及了就飞快地跑了过去
+
+任务：高抬腿1分钟+左右抬腿共20次`,
+'🏃 高抬腿1分钟+左右抬腿共20次','🏃 高抬腿1分钟+左右抬腿共20次');
+  chapter=11;
+}
+function finalPee(){
+  refreshUI(
+`恭喜上了飞机现在可以尿尿了
+
+任务：排完所有的尿`,
+'🎉 排完所有的尿','🎉 排完所有的尿');
+  chapter=12;
+}
+function againYes(){
+  refreshUI(
+`是否再来一轮？
+
+`,
+'👍 是','👎 否');
+  chapter=13;
+}
+function againNo(){
+  alert('返回主菜单（此处仅演示）');
+  resetStory();
+}
+function restartRound(){
+  airportTime = Date.now()/1000 + 2*3600;
+  money=0; goods={};
+  startChapter1();
+}
+
+/********************************************************************
+ *  工具函数
+ *******************************************************************/
+const sleep = t=>new Promise(r=>setTimeout(r,t*1000));
+const rand6 = ()=>Math.floor(Math.random()*6)+1;
+
+/********************************************************************
+ *  商店弹窗（模拟 tkinter Shopping 窗口）
+ *******************************************************************/
+async function openShop(initMoney){
+  let m = initMoney;
+  let g = {...goods};
+  while(true){
+    let list = items.map((it,i)=>`${i}. ${it[0]} ${it[1]}元`).join('\n');
+    let ans = prompt(`小小商店\n${list}\n\n持有金钱: ${m}元\n输入序号购买，留空或取消退出`);
+    if(ans===null || ans==='') break;
+    let idx = parseInt(ans);
+    if(isNaN(idx) || idx<0 || idx>=items.length){ alert('序号无效'); continue; }
+    let [name,price] = items[idx];
+    if(m<price){ alert('余额不足'); continue; }
+    if(!confirm(`是否花费${price}元购买${name}？`)) continue;
+    m-=price;
+    g[name] = (g[name]||0)+1;
+    alert(`购买成功！已获得${name}`);
+  }
+  goods=g; money=m;
+  return m;
+}
+
+/********************************************************************
+ *  绑定按钮
+ *******************************************************************/
+$('button-1').onclick = ()=>handleButton1();
+$('button-2').onclick = ()=>handleButton2();
+</script>
+</body>
+</html>
